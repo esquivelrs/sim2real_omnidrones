@@ -1,13 +1,13 @@
 /motion_capture_tracking:
   ros__parameters:
     type: optitrack
-    hostname: 141.23.110.143
-    mode: libobjecttracker
+    hostname: 192.168.1.127
+    mode: motionCapture
     topics:
       poses:
         qos:
           mode: sensor
-          deadline: 100.0
+          deadline: 50.0
     marker_configurations:
       default:
         offset:
@@ -107,6 +107,32 @@
           - 0.0535816
           - -0.0400775
           - 0.0432799
+      custom:
+        offset:
+        - 0.0
+        - 0.0
+        - 0.0
+        points:
+          p0:
+          - 0.00404364
+          - -0.003819084
+          - 0.044847263
+          p1:
+          - 0.053301559
+          - -0.005241718
+          - 0.003299543
+          p2:
+          - -0.006209561
+          - 0.005279079
+          - 0.052425991
+          p3:
+          - -0.050273491
+          - -0.001628632
+          - 0.005699012
+          p4:
+          - -0.00086215
+          - 0.015968507
+          - -0.001419829
     dynamics_configurations:
       default:
         max_velocity:
@@ -126,5 +152,5 @@
         - 0.0
         - 0.0
         - 0.0
-        marker: default_single_marker
+        marker: custom
         dynamics: default

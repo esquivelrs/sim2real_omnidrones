@@ -43,7 +43,6 @@ RUN mkdir -p /ros_ws/src
 # install ros2 packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-desktop=0.10.0-1* \
-    ros-humble-motion-capture-tracking \
     ros-humble-tf-transformations \
     && rm -rf /var/lib/apt/lists/*
 
@@ -74,6 +73,7 @@ WORKDIR /home/ros2_ws/src
 # clone the repository
 RUN git clone https://github.com/IMRCLab/crazyswarm2 --recursive
 RUN git clone https://github.com/tud-phi/ros2-mocap_optitrack.git
+RUN git clone --recurse-submodules https://github.com/IMRCLab/motion_capture_tracking
 
 # build the repository
 WORKDIR /home/ros2_ws
