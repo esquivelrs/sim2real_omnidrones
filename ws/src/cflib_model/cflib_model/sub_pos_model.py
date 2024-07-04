@@ -13,8 +13,11 @@ from threading import Thread
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.log import LogConfig
+from cflib.crazyflie.log import LogConfig, LogTocElement
 from cflib.crazyflie.toc import TocFetcher, Toc
+from cflib.crtp.crtpstack import CRTPPacket
+from cflib.crtp.crtpstack import CRTPPort
+from cflib.utils.callbacks import Caller
 from cflib.crazyflie.mem import MemoryElement
 from cflib.crazyflie.mem import Poly4D
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
@@ -146,12 +149,16 @@ def log_pos_callback(timestamp, data, logconf):
     position_estimate[0] = data['stateEstimate.x']
     position_estimate[1] = data['stateEstimate.y']
     position_estimate[2] = data['stateEstimate.z']
+    position_estimate[3] = data['stateEstimate.qx']
+    position_estimate[4] = data['stateEstimate.qy']
+    position_estimate[5] = data['stateEstimate.qz']
+    position_estimate[6] = 1.0
     
-    quat = quaternion_from_euler(data['stateEstimate.roll'], data['stateEstimate.pitch'], data['stateEstimate.yaw'])
-    position_estimate[3] = quat[0]
-    position_estimate[4] = quat[1]
-    position_estimate[5] = quat[2]
-    position_estimate[6] = quat[3]
+    # quat = quaternion_from_euler(data['stateEstimate.roll'], data['stateEstimate.pitch'], data['stateEstimate.yaw'])
+    # position_estimate[3] = quat[0]
+    # position_estimate[4] = quat[1]
+    # position_estimate[5] = quat[2]
+    # position_estimate[6] = quat[3]
     
     #print('pos: ({}, {}, {})'.format(position_estimate[0], position_estimate[1], position_estimate[2]))
   
@@ -204,18 +211,29 @@ def quaternion_from_euler(roll: float, pitch: float, yaw: float):
 def main(args=None):
     rclpy.init(args=args)
     cflib.crtp.init_drivers()
+    
+    
+    
 
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
         cf = scf.cf
+        
+        
+        # toc = Toc()
+        # toc_fetcher = TocFetcher(cf, LogTocElement,
+        #                         CRTPPort.ALL,
+        #                         toc, None, None)
+        
         pos_node = PosNode(cf)
         try:
             logconf = LogConfig(name='Position', period_in_ms=10)
             logconf.add_variable('stateEstimate.x', 'float')
             logconf.add_variable('stateEstimate.y', 'float')
             logconf.add_variable('stateEstimate.z', 'float')
-            logconf.add_variable('stateEstimate.roll', 'float')
-            logconf.add_variable('stateEstimate.pitch', 'float')
-            logconf.add_variable('stateEstimate.yaw', 'float')
+            logconf.add_variable('stateEstimate.qx', 'float')
+            logconf.add_variable('stateEstimate.qy', 'float')
+            logconf.add_variable('stateEstimate.qz', 'float')
+            logconf.add_variable('stateEstimate.qw', 'float')
             
             adjust_orientation_sensitivity(cf)
             activate_kalman_estimator(cf)
@@ -223,17 +241,30 @@ def main(args=None):
             # print('The sequence is {:.1f} seconds long'.format(duration))
             reset_estimator(cf, pos_node)
             print('Estimator is reset')
-            scf.cf.log.add_config(logconf)
-            logconf.data_received_cb.add_callback(log_pos_callback)
-            logconf.start()
-            while rclpy.ok():
-                # Spin once to check for incoming messages
-                rclpy.spin_once(pos_node, timeout_sec=0.1)
-                #print('pos: ({}, {}, {})'.format(position_estimate[0], position_estimate[1], position_estimate[2]))
-                publish_pose(pos_node)
+            # scf.cf.log.add_config(logconf)
+            # logconf.data_received_cb.add_callback(log_pos_callback)
+            # logconf.start()
+            with SyncLogger(scf, logconf) as logger:
+                
+                for log_entry in logger:
+                    print(f'logger: {logger}')
+                    
+                    timestamp = log_entry[0]
+                    data = log_entry[1]
+                    logconf_name = log_entry[2]
+                    print('adsf [%d][%s]: %s' % (timestamp, logconf_name, data))
+                    
+                    # Spin once to check for incoming messages
+                    rclpy.spin_once(pos_node, timeout_sec=0.001)
+                    #print('pos: ({}, {}, {})'.format(position_estimate[0], position_estimate[1], position_estimate[2]))
+                    publish_pose(pos_node)
+                    
+                    
+                    if not rclpy.ok():
+                        break
                 
             
-            logconf.stop()
+            # logconf.stop()
 
             # You can add additional logic here that you want to run in the loop
         except KeyboardInterrupt:
