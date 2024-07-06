@@ -233,7 +233,7 @@ def main(args=None):
             logconf.add_variable('stateEstimate.qx', 'float')
             logconf.add_variable('stateEstimate.qy', 'float')
             logconf.add_variable('stateEstimate.qz', 'float')
-            logconf.add_variable('stateEstimate.qw', 'float')
+            #logconf.add_variable('stateEstimate.qw', 'float')
             
             adjust_orientation_sensitivity(cf)
             activate_kalman_estimator(cf)

@@ -7,7 +7,7 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy
 import time
 from threading import Thread
 
-import motioncapture
+#import motioncapture
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie

@@ -1,7 +1,30 @@
 # sim2real_omnidrones
 
 
+## Docker container:
+Create image:
 
-`bash docker-run.sh /home/rolando/Documents/DTU/SCPercept/OmniDrones/sim2real_omnidrones/ws`
+```
+cd docker
+make image
+```
 
-`docker exec -it dtu_sim2real bash`
+Run image:
+
+```
+bash docker-run.sh ./../ws
+```
+
+Open a new terminal:
+
+```
+docker exec -it dtu_sim2real bash
+```
+
+
+# Build ROS2 Package
+ build image:
+
+ ```
+ colcon build
+ ```
