@@ -1,10 +1,4 @@
-FROM ros:humble-ros-base-jammy
-
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt update
-RUN apt upgrade -y
+FROM althack/ros2:humble-cuda-base
 
 # # create workspace
 # RUN mkdir -p /ws
@@ -14,6 +8,9 @@ RUN apt upgrade -y
 # Install Dependencies
 RUN apt install libboost-program-options-dev libusb-1.0-0-dev python3-pip -y
 
+RUN apt update && apt install curl -y && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
 # install bootstrap tools
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -95,6 +92,21 @@ RUN cd build && python3 setup.py install
 
 # export PYTHONPATH=/home/ros2_ws/crazyflie-firmware/build:$PYTHONPATH
 ENV PYTHONPATH=/home/ros2_ws/crazyflie-firmware/build:$PYTHONPATH
+
+
+# Model Dependencies:
+RUN mkdir -p /dep
+WORKDIR /home/dep
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+RUN git clone https://github.com/pytorch/tensordict.git
+RUN cd /home/dep/tensordict && pip3 install tomli && python3 setup.py develop
+
+RUN git clone https://github.com/pytorch/rl.git
+RUN cd /home/dep/rl && python3 setup.py develop
+
+RUN git clone https://github.com/btx0424/OmniDrones.git
+RUN cd /home/dep/OmniDrones && pip3 install -e .
+
 
 RUN mkdir -p /ws
 
