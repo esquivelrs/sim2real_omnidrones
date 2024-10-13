@@ -24,7 +24,9 @@ setup(
     entry_points={
         'console_scripts': [
             'cflib = cflib_model.sub_pos_model:main',
-            'cflib_org = cflib_model.sub_pos_model_org:main'
+            'cflib_org = cflib_model.sub_pos_model_org:main',
+            'craziflie = cflib_model.crazyflie_model:main'
+
         ],
     },
 )
