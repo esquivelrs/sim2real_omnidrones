@@ -16,15 +16,17 @@ bash docker-run.sh ./../ws
 ```
 
 Open a new terminal:
-
 ```
 docker exec -it dtu_sim2real bash
 ```
 
+### Build ROS2 Packages
 
-# Build ROS2 Package
- build image:
+```
+colcon build --symlink-install
+```
 
- ```
- colcon build
- ```
+Run simple task follow the instructions in: [link](https://imrclab.github.io/crazyswarm2/usage.html#python-scripts) with flow deck or for motion_capture: [link](https://imrclab.github.io/crazyswarm2/usage.html#positioning)
+
+
+
