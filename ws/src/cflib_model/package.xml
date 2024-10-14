@@ -16,6 +16,8 @@
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>ros2launch</exec_depend>
   <depend>motion_capture_tracking_interfaces</depend>
+  <depend>craziflie</depend>
+  <depend>craziflie_interfaces</depend>
 
   <export>
     <build_type>ament_python</build_type>

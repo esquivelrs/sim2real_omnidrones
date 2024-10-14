@@ -13,4 +13,5 @@ docker run -it \
     -v /dev:/dev \
     -v $XAUTHORITY:/tmp/.Xauthority:ro \
     --shm-size=512M \
+    --gpus all \
     esquivelrs/sim2real_omnidrones:$VERSION bash

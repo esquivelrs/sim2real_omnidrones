@@ -76,7 +76,7 @@
     robot_types:
       cf21:
         motion_capture:
-          enabled: true
+          enabled: false
           marker: default_single_marker
           dynamics: default
         big_quad: false
@@ -100,6 +100,19 @@
             frequency: 10
           status:
             frequency: 1
+        custom_topics:
+          full_state:
+            frequency: 10
+            vars:
+            - stateEstimateZ.vx
+            - stateEstimateZ.vy
+            - stateEstimateZ.vz
+            - stateEstimateZ.rateRoll
+            - stateEstimateZ.ratePitch
+            - stateEstimateZ.rateYaw
+            - stateEstimateZ.ax
+            - stateEstimateZ.ay
+            - stateEstimateZ.az
       firmware_params:
         commander:
           enHighLevel: 1
